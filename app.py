@@ -373,10 +373,25 @@ if st.session_state.classifier_ready and st.session_state.label_texts:
         keywords, scores = zip(*ranking[:30])  # first 30 to have choice
 
         # ===== Filter keywords (no short words, no numbers)
+        banlist = {
+            "https", "http", "com", "org", "www", "pdf", "doi", "pmid", "pmc", "license",
+          "article", "preprint", "medrxiv", "biorxiv", "creativecommons",
+          "et", "al", "fig", "figure", "table", "supplementary", "preprints",
+          "study", "studies", "result", "results", "data", "author", "authors",
+          "method", "methods", "analysis", "analyses", "report", "review", "journal",
+          "introduction", "discussion", "conclusion", "abstract", "background",
+          "sars", "cov", "covid", "covid19", "coronavirus", "infection", "pandemic",
+          "day", "week", "month", "year", "january", "february", "march", "april", "may", "june",
+          "july", "august", "september", "october", "november", "december",
+          "ml", "mg", "kg", "cm", "mm", "vs", "e.g", "i.e", "etc", "hr", "hrs",
+          "baseline", "number", "value", "values", "level", "levels", "type", "types",
+          "high", "low", "group", "groups", "included", "sample", "samples", "baseline"
+          }
+
         filtered_keywords = [
             word for word in keywords
-            if word.isalpha() and len(word) > 2
-        ][:10]  # Keep Top 10 only after cleaning
+            if word.isalpha() and len(word) > 2 and word.lower() not in banlist
+        ][:10]
 
         plt.barh(filtered_keywords, scores[:len(filtered_keywords)])
         plt.xlabel("Importance")
